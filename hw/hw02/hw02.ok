@@ -1,6 +1,6 @@
 {
     "name": "Homework 2",
-    "endpoint": "cal/cs61a/sp18/hw02",
+    "endpoint": "/mnt/c/Users/jenla/Desktop/cs61A/hw/hw02",
     "src": [
         "hw02.py"
     ],
