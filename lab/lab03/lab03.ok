@@ -1,6 +1,6 @@
 {
     "name": "Lab 3",
-    "endpoint": "cal/cs61a/sp18/lab03",
+    "endpoint": "/mnt/c/Users/jenla/Desktop/cs61A/lab/lab03",
     "src": [
         "lab03.py",
         "lab03_extra.py",

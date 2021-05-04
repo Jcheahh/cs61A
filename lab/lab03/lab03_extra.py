@@ -31,6 +31,22 @@ def cycle(f1, f2, f3):
     19
     """
     "*** YOUR CODE HERE ***"
+    def func(n):
+        def my_cycle(x):
+            val = x
+            count = 1
+            while count <= n:
+                if count % 3 == 1:
+                    val = f1(val)
+                elif count % 3 == 2:
+                    val = f2(val)
+                else:
+                    val = f3(val)
+                count += 1
+            return val
+        return my_cycle
+    return func
+
 
 ## Lambda expressions
 
@@ -49,9 +65,9 @@ def is_palindrome(n):
     True
     """
     x, y = n, 0
-    f = lambda: _____
+    f = lambda: y * 10 + x % 10
     while x > 0:
-        x, y = _____, f()
+        x, y = x // 10, f()
     return y == n
 
 ## More recursion practice
@@ -66,6 +82,8 @@ def skip_mul(n):
     """
     if n == 2:
         return 2
+    elif n == 1:
+        return 1
     else:
         return n * skip_mul(n - 2)
 
@@ -80,6 +98,17 @@ def is_prime(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    if n == 1:
+        return False
+
+    def check(i):
+        if i == n:
+            return True
+        
+        if n % i == 0:
+            return False
+        return check(i + 1)
+    return check(2)
 
 def interleaved_sum(n, odd_term, even_term):
     """Compute the sum odd_term(1) + even_term(2) + odd_term(3) + ..., up
@@ -90,6 +119,12 @@ def interleaved_sum(n, odd_term, even_term):
     29
     """
     "*** YOUR CODE HERE ***"
+    if n == 0:
+        return 0
+    elif n % 2 == 0:
+        return interleaved_sum(n - 1, odd_term, even_term) + even_term(n)
+    else:
+        return interleaved_sum(n - 1, odd_term, even_term) + odd_term(n)
 
 def ten_pairs(n):
     """Return the number of ten-pairs within positive integer n.
@@ -102,3 +137,15 @@ def ten_pairs(n):
     6
     """
     "*** YOUR CODE HERE ***"
+    def check(n, digits):
+        if n == 0:
+            return 0
+        elif n % 10 == digits:
+            return check(n // 10, digits) + 1
+        else:
+            return check(n // 10, digits)
+
+    if n < 10:
+        return 0
+    else:
+        return ten_pairs(n // 10) + check(n // 10, 10 - n % 10)
