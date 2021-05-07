@@ -1,4 +1,6 @@
 HW_SOURCE_FILE = 'hw04.py'
+from math import sqrt
+from operator import add
 
 ###############
 #  Questions  #
@@ -27,6 +29,7 @@ def taxicab(a, b):
     9
     """
     "*** YOUR CODE HERE ***"
+    return abs(street(a) - street(b)) + abs(avenue(a) - avenue(b))
 
 def squares(s):
     """Returns a new list containing square roots of the elements of the
@@ -40,6 +43,14 @@ def squares(s):
     []
     """
     "*** YOUR CODE HERE ***"
+    def rounded_square(n):
+        return round(sqrt(n))
+
+    def is_match(n):
+        return rounded_square(n) * rounded_square(n) == n
+
+    return [rounded_square(n) for n in s if is_match(n)]
+
 
 def g(n):
     """Return the value of G(n), computed recursively.
@@ -59,6 +70,10 @@ def g(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    if n <= 3:
+        return n
+    else:
+        return g(n-1) + 2 * g(n-2) + 3 * g(n-3)
 
 def g_iter(n):
     """Return the value of G(n), computed iteratively.
@@ -78,6 +93,14 @@ def g_iter(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    if n <= 3:
+        return n
+
+    first, second, third = 1, 2, 3
+
+    for i in range(n-3):
+        first, second, third = second, third, first*3 + second*2 + third
+    return third
 
 def pingpong(n):
     """Return the nth element of the ping-pong sequence.
@@ -111,6 +134,16 @@ def pingpong(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    def count(step, i, value):
+        if i > n:
+            return value
+        elif has_seven(i) or i % 7 == 0:
+            return count(-step, i + 1, value + step)
+        else:
+            return count(step, i + 1, value + step)
+            
+    return count(1, 1, 0)
+    
 
 def has_seven(k):
     """Returns True if at least one of the digits of k is a 7, False otherwise.
@@ -148,6 +181,19 @@ def count_change(amount):
     9828
     """
     "*** YOUR CODE HERE ***"
+    def count_partitions(m, n):
+        if m == 0:
+            return 1
+        elif m < 0:
+            return 0
+        elif n == 0:
+            return 0
+        elif n > m:
+            return 0
+        else:
+            return count_partitions(m - n, n) + count_partitions(m, n * 2)
+
+    return count_partitions(amount, 1)
 
 ###################
 # Extra Questions #
@@ -164,4 +210,4 @@ def make_anonymous_factorial():
     >>> check(HW_SOURCE_FILE, 'make_anonymous_factorial', ['Assign', 'AugAssign', 'FunctionDef', 'Recursion'])
     True
     """
-    return 'YOUR_EXPRESSION_HERE'
+    return lambda n: reduce(lambda x, y: x * y, [z for z in range(0, n)])
