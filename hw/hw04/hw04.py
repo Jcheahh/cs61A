@@ -200,6 +200,7 @@ def count_change(amount):
 ###################
 
 from operator import sub, mul
+from functools import reduce
 
 def make_anonymous_factorial():
     """Return the value of an expression that computes factorial.
@@ -210,4 +211,4 @@ def make_anonymous_factorial():
     >>> check(HW_SOURCE_FILE, 'make_anonymous_factorial', ['Assign', 'AugAssign', 'FunctionDef', 'Recursion'])
     True
     """
-    return lambda n: reduce(lambda x, y: x * y, [z for z in range(0, n)])
+    return lambda n: reduce(lambda x, y: x * y, [z for z in range(1, n + 1)])
