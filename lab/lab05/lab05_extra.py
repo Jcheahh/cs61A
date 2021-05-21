@@ -22,7 +22,9 @@ def build_successors_table(tokens):
     for word in tokens:
         if prev not in table:
             "*** YOUR CODE HERE ***"
+            table[prev] = [] 
         "*** YOUR CODE HERE ***"
+        table[prev].append(word)
         prev = word
     return table
 
@@ -40,6 +42,8 @@ def construct_sent(word, table):
     result = ''
     while word not in ['.', '!', '?']:
         "*** YOUR CODE HERE ***"
+        result += word + " "
+        word = random.choice(table[word])
     return result.strip() + word
 
 def shakespeare_tokens(path='shakespeare.txt', url='http://composingprograms.com/shakespeare.txt'):
@@ -53,8 +57,8 @@ def shakespeare_tokens(path='shakespeare.txt', url='http://composingprograms.com
         return shakespeare.read().decode(encoding='ascii').split()
 
 # Uncomment the following two lines
-# tokens = shakespeare_tokens()
-# table = build_successors_table(tokens)
+tokens = shakespeare_tokens()
+table = build_successors_table(tokens)
 
 def random_sent():
     import random
@@ -86,7 +90,13 @@ def prune_leaves(t, vals):
       6
     """
     "*** YOUR CODE HERE ***"
-
+    if is_leaf(t):
+      if label(t) in vals:
+        return None
+      else:
+        return t
+    else:
+      return tree(label(t), [prune_leaves(n, vals) for n in branches(t) if prune_leaves(n, vals)])
 # Q9
 def sprout_leaves(t, vals):
     """Sprout new leaves containing the data in vals at each leaf in
@@ -122,6 +132,9 @@ def sprout_leaves(t, vals):
           2
     """
     "*** YOUR CODE HERE ***"
+    if is_leaf(t) and label(t):
+      return tree(label(t), [tree(x) for x in vals])
+    return tree(label(t), [sprout_leaves(n, vals) for n in branches(t)]) 
 
 # Q10
 def add_trees(t1, t2):
@@ -160,3 +173,28 @@ def add_trees(t1, t2):
       5
     """
     "*** YOUR CODE HERE ***"
+    if t1 == None and t2 == None:
+      return None
+    elif t1 == None:
+      return t2
+    elif t2 == None:
+      return t1
+    else:
+      b1 = branches(t1)
+      b2 = branches(t2)
+      l1 = len(b1)
+      l2 = len(b2) 
+
+      res = []
+
+      for n in range(max(l1, l2)):
+        if n < l1 and n < l2:
+          new_t1, new_t2 = b1[n], b2[n]
+        elif n >= l1:
+          new_t1, new_t2 = None, b2[n]
+        else:
+          new_t1, new_t2 = b1[n], None
+
+        res.append(add_trees(new_t1, new_t2))
+
+      return tree(label(t1) + label(t2), res)

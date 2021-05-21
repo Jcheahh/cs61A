@@ -7,14 +7,16 @@ def map(fn, seq):
     [1, 4, 9]
     """
     "*** YOUR CODE HERE ***"
+    return [fn(n) for n in seq]
 
 def filter(pred, seq):
     """Keeps elements in seq only if they satisfy pred.
 
-    >>> filter(lambda x: x % 2 == 0, [1, 2, 3, 4])
+    >>> filter(lambda x: x   % 2 == 0, [1, 2, 3, 4])
     [2, 4]
     """
     "*** YOUR CODE HERE ***"
+    return [n for n in seq if pred(n)]
 
 def reduce(combiner, seq):
     """Combines elements in seq using combiner.
@@ -27,7 +29,10 @@ def reduce(combiner, seq):
     4
     """
     "*** YOUR CODE HERE ***"
-
+    res = seq[0]
+    for n in seq[1:]:
+        res = combiner(res, n)
+    return res
 # Q3
 def acorn_finder(t):
     """Returns True if t contains a node with the value 'acorn' and
@@ -44,6 +49,16 @@ def acorn_finder(t):
     False
     """
     "*** YOUR CODE HERE ***"
+    if label(t) == 'acorn':
+        return True
+
+    for n in branches(t):
+        if acorn_finder(n):
+            return True
+        else:
+            continue
+
+    return False
 
 # Q4
 def replace_leaf(t, old, new):
@@ -76,6 +91,10 @@ def replace_leaf(t, old, new):
     True
     """
     "*** YOUR CODE HERE ***"
+    if label(t) == old and is_leaf(t):
+        return tree(new)
+    return tree(label(t), [replace_leaf(n, old, new) for n in branches(t)])
+
 
 # Tree ADT
 def tree(label, branches=[]):
