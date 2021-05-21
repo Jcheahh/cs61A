@@ -95,6 +95,9 @@ def replace_leaf(t, old, new):
     True
     """
     "*** YOUR CODE HERE ***"
+    if is_leaf(t) and label(t) == old:
+        return tree(new)
+    return tree(label(t), [replace_leaf(b, old, new) for b in branches(t)])
 
 def print_move(origin, destination):
     """Print instructions to move a disk."""
@@ -129,6 +132,13 @@ def move_stack(n, start, end):
     """
     assert 1 <= start <= 3 and 1 <= end <= 3 and start != end, "Bad start/end"
     "*** YOUR CODE HERE ***"
+    if n == 1:
+        print_move(start, end)
+    else:
+        other = 6 - start - end
+        move_stack(n - 1, start, other)
+        print_move(start, end)
+        move_stack(n - 1, other, end)
 
 ###########
 # Mobiles #
@@ -167,14 +177,17 @@ def weight(size):
     """Construct a weight of some size."""
     assert size > 0
     "*** YOUR CODE HERE ***"
+    return tree(size)
 
 def size(w):
     """Select the size of a weight."""
     "*** YOUR CODE HERE ***"
+    return label(w)
 
 def is_weight(w):
     """Whether w is a weight, not a mobile."""
     "*** YOUR CODE HERE ***"
+    return not is_mobile(w) and is_leaf(w)
 
 def examples():
     t = mobile(side(1, weight(2)),
@@ -220,6 +233,19 @@ def balanced(m):
     False
     """
     "*** YOUR CODE HERE ***"
+    if is_weight(m):
+        return True
+    else:
+        left = sides(m)[0]
+        right = sides(m)[1]
+
+        if balanced(end(left)) and balanced(end(right)):
+            l_torque = length(left) * total_weight(end(left))
+            r_torque = length(right) * total_weight(end(right))
+
+            return l_torque == r_torque
+        else:
+            return False
 
 #######
 # OOP #
@@ -268,6 +294,12 @@ class Account:
         """Return the number of years until balance would grow to amount."""
         assert self.balance > 0 and amount > 0 and self.interest > 0
         "*** YOUR CODE HERE ***"
+        n, curr_amount = 0, self.balance
+        while curr_amount < amount:
+            curr_amount *= 1 + self.interest
+            n += 1
+
+        return n
 
 class FreeChecking(Account):
     """A bank account that charges for withdrawals, but the first two are free!
@@ -297,6 +329,17 @@ class FreeChecking(Account):
     free_withdrawals = 2
 
     "*** YOUR CODE HERE ***"
+    def __init__(self, holder):
+        self.free_withdrawals = FreeChecking.free_withdrawals
+
+    def withdraw(self, amount):
+        if self.free_withdrawals > 0:
+            self.free_withdrawals -= 1
+            fee = 0
+        else:
+            fee = self.withdraw_fee
+
+        return Account.withdraw(self, amount + fee)
 
 ############
 # Mutation #
@@ -323,6 +366,13 @@ def make_counter():
     5
     """
     "*** YOUR CODE HERE ***"
+    d = {}
+    def go(char):
+        old = d.get(char, 0)
+        d[char] = old + 1
+        return d[char]
+
+    return go
 
 def make_fib():
     """Returns a function that returns the next Fibonacci number
@@ -344,6 +394,15 @@ def make_fib():
     12
     """
     "*** YOUR CODE HERE ***"
+    first, second = 0, 1
+    def fib():
+        nonlocal first, second
+
+        temp = first
+        first, second = second, first + second
+        return temp
+    return fib
+
 
 def make_withdraw(balance, password):
     """Return a password-protected withdraw function.
@@ -374,6 +433,21 @@ def make_withdraw(balance, password):
     True
     """
     "*** YOUR CODE HERE ***"
+    attempts = []
+    def mk_wd(amount, pw):
+        if len(attempts) >= 3:
+            return f"Your account is locked. Attempts: {attempts}"
+
+        if pw != password:
+            attempts.append(pw)
+            return "Incorrect password"
+
+        nonlocal balance
+        if amount > balance:
+            return 'Insufficient funds'
+        balance = balance - amount
+        return balance
+    return mk_wd
 
 def make_joint(withdraw, old_password, new_password):
     """Return a password-protected withdraw function that has joint access to
@@ -414,6 +488,17 @@ def make_joint(withdraw, old_password, new_password):
     "Your account is locked. Attempts: ['my', 'secret', 'password']"
     """
     "*** YOUR CODE HERE ***"
+    attempt = withdraw(0, old_password)
+
+    if type(attempt) == str:
+        return attempt
+
+    def mk_jnt(amount, pw):
+        if pw == new_password:
+            return withdraw(amount, old_password)
+        else:
+            return withdraw(amount, pw)
+    return mk_jnt
 
 ###################
 # Extra Questions #
@@ -426,10 +511,12 @@ def interval(a, b):
 def lower_bound(x):
     """Return the lower bound of interval x."""
     "*** YOUR CODE HERE ***"
+    return x[0]
 
 def upper_bound(x):
     """Return the upper bound of interval x."""
     "*** YOUR CODE HERE ***"
+    return x[1]
 
 def str_interval(x):
     """Return a string representation of interval x."""
@@ -455,6 +542,11 @@ def sub_interval(x, y):
     """Return the interval that contains the difference between any value in x
     and any value in y."""
     "*** YOUR CODE HERE ***"
+    p1 = lower_bound(x) - lower_bound(y)
+    p2 = lower_bound(x) - upper_bound(y)
+    p3 = upper_bound(x) - lower_bound(y)
+    p4 = upper_bound(x) - upper_bound(y)
+    return [min(p1, p2, p3, p4), max(p1, p2, p3, p4)]
 
 def div_interval(x, y):
     """Return the interval that contains the quotient of any value in x divided by
@@ -482,8 +574,8 @@ def check_par():
     >>> lower_bound(x) != lower_bound(y) or upper_bound(x) != upper_bound(y)
     True
     """
-    r1 = interval(1, 1) # Replace this line!
-    r2 = interval(1, 1) # Replace this line!
+    r1 = interval(1, 10)  # Replace this line!
+    r2 = interval(1, 2) # Replace this line!
     return r1, r2
 
 def multiple_references_explanation():
