@@ -1,6 +1,6 @@
 {
     "name": "Lab 6",
-    "endpoint": "cal/cs61a/sp18/lab06",
+    "endpoint": "/mnt/c/Users/jenla/Desktop/cs61A/lab/lab06",
     "src": [
         "classes.py",
         "data.py"
