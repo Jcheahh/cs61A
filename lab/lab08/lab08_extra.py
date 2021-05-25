@@ -26,16 +26,25 @@ class Keyboard:
 
     def __init__(self, *args):
         "*** YOUR CODE HERE ***"
+        self.buttons = {}
+        for b in args:
+            self.buttons[b.pos] = b
 
     def press(self, info):
         """Takes in a position of the button pressed, and
         returns that button's output"""
         "*** YOUR CODE HERE ***"
+        self.buttons[info].pressed += 1
+        return self.buttons[info].key
 
     def typing(self, typing_input):
         """Takes in a list of positions of buttons pressed, and
         returns the total output"""
         "*** YOUR CODE HERE ***"
+        res = ""
+        for n in typing_input:
+            res += self.press(n)
+        return res
 
 class Button:
     def __init__(self, pos, key):
@@ -74,6 +83,38 @@ def make_advanced_counter_maker():
     1
     """
     "*** YOUR CODE HERE ***"
+    glob = 0
+    def make():
+        local = 0
+        def counter(action):
+            def count():
+                nonlocal local
+                local += 1
+                return local
+
+            def global_count():
+                nonlocal glob
+                glob += 1
+                return glob
+            
+            def reset():
+                nonlocal local
+                local = 0
+
+            def global_reset():
+                nonlocal glob
+                glob = 0
+
+            actions = {
+                'count': count,
+                'global-count': global_count,
+                'reset': reset,
+                'global-reset': global_reset
+            }
+
+            return actions[action]()
+        return counter
+    return make
 
 # Lists
 def trade(first, second):
@@ -106,8 +147,17 @@ def trade(first, second):
     m, n = 1, 1
 
     "*** YOUR CODE HERE ***"
+    deal = False
+    while m < len(first) and not deal:
+        m += 1
+        n = 1
+        while n < len(second):
+            if sum(first[:m]) == sum(second[:n]):
+                deal = True
+                break
+            n += 1
 
-    if False: # change this line!
+    if deal: # change this line!
         first[:m], second[:n] = second[:n], first[:m]
         return 'Deal!'
     else:
@@ -130,6 +180,12 @@ def make_to_string(front, mid, back, empty_repr):
     '()'
     """
     "*** YOUR CODE HERE ***"
+    def to_string(link):
+        if link is Link.empty:
+            return empty_repr
+        else:
+            return front + str(link.first) + mid + to_string(link.rest) + back
+    return to_string
 
 def tree_map(fn, t):
     """Maps the function fn over the entries of t and returns the
@@ -154,6 +210,10 @@ def tree_map(fn, t):
         256
     """
     "*** YOUR CODE HERE ***"
+    if t.is_leaf() and t.label:
+        return Tree(fn(t.label))
+    else:
+        return Tree(fn(t.label), [tree_map(fn, b) for b in t.branches])
 
 def long_paths(tree, n):
     """Return a list of all paths in tree with length at least n.
@@ -185,6 +245,19 @@ def long_paths(tree, n):
     [Link(0, Link(11, Link(12, Link(13, Link(14)))))]
     """
     "*** YOUR CODE HERE ***"
+    # res = [t.label]
+    # for b in tree.branches:
+    #     res.append(b)
+    #     if b.is_leaf():
+    #         break
+
+    def get_paths(tree):
+        if tree.is_leaf():
+            return [Link(tree.label)]
+        else:
+            return [Link(tree.label, path) for child in tree.branches for path in get_paths(child)]
+
+    return [path for path in get_paths(tree) if deep_len(path) > n]
 
 # Orders of Growth
 def zap(n):
