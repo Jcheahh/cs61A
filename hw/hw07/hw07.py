@@ -62,6 +62,7 @@ def digits(n):
     while n > 0:
         n, last = n // 10, n % 10
         "*** YOUR CODE HERE ***"
+        s = Link(last, s)
     return s
 
 class VendingMachine:
@@ -168,4 +169,9 @@ class MissManners:
         magic_word = 'please '
         if not message.startswith(magic_word):
             return 'You must learn to say please first.'
-        "*** YOUR CODE HERE ***"
+        
+        method = message.replace(magic_word, "", 1)
+        if not hasattr(self.obj, method):
+            return 'Thanks for asking, but I know not how to {}.'.format(method)
+        else:
+            return getattr(self.obj, method)(*args)
