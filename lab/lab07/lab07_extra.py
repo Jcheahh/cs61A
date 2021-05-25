@@ -18,6 +18,14 @@ def remove_all(link , value):
     <0 1>
     """
     "*** YOUR CODE HERE ***"
+    if link.rest is Link.empty:
+        return 
+    elif link.second is value:
+        link.rest = link.rest.rest
+        remove_all(link, value)
+    else:
+        remove_all(link.rest, value)
+
 
 # Q7
 def deep_map_mut(fn, link):
@@ -33,6 +41,13 @@ def deep_map_mut(fn, link):
     <9 <16> 25 36>
     """
     "*** YOUR CODE HERE ***"
+    if link is Link.empty:
+        return
+    elif isinstance(link.first, Link):
+        deep_map_mut(fn, link.first)
+    else:
+        link.first = fn(link.first)
+    deep_map_mut(fn, link.rest)
 
 # Q8
 def has_cycle(link):
@@ -50,6 +65,12 @@ def has_cycle(link):
     False
     """
     "*** YOUR CODE HERE ***"
+    temp = link
+    while temp.rest is not Link.empty:
+        if temp.rest is link:
+            return True
+        temp = temp.rest
+    return False
 
 def has_cycle_constant(link):
     """Return whether link contains a cycle.
@@ -63,6 +84,7 @@ def has_cycle_constant(link):
     False
     """
     "*** YOUR CODE HERE ***"
+    return has_cycle(link)
 
 # Q9
 def reverse_other(t):
@@ -79,3 +101,18 @@ def reverse_other(t):
     Tree(1, [Tree(8, [Tree(3, [Tree(5), Tree(4)]), Tree(6, [Tree(7)])]), Tree(2)])
     """
     "*** YOUR CODE HERE ***"
+    def reverse(t, layer):
+        if t.is_leaf():
+            return
+
+        if layer % 2 == 0:
+            # Reverse list
+            for i in range(len(t.branches)//2):
+                j = abs(i - (len(t.branches)-1))
+
+                t.branches[i].label, t.branches[j].label = t.branches[j].label, t.branches[i].label
+
+        for branch in t.branches:
+            reverse(branch, layer + 1)
+
+    return reverse(t, 2)
