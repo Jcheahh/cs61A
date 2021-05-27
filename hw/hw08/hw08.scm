@@ -32,10 +32,11 @@
 )
 
 (define (nodots s)
-  (cond 
-    ((or (not (pair? s)) (null? (cdr s))) s)
-    ((pair? (cdr s)) (cons (nodots (car s)) (nodots (cdr s))))
-    (else (cons (nodots (car s)) (cons (cdr s) '())))
+  (cond
+    ((null? s) nil)
+    ((not (pair? s)) (cons s nil))
+    ((pair? (car s)) (cons (nodots (car s)) (nodots (cdr s))))
+    (else (cons (car s) (nodots (cdr s))))
   )
 )
 
