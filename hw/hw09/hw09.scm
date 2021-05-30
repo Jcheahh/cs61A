@@ -1,5 +1,10 @@
 (define (how-many-dots s)
-  'YOUR-CODE-HERE
+  (cond 
+    ((null? s) 0)
+    ((number? s) 1)
+    ((pair? (car s)) (+ (how-many-dots (car s)) (how-many-dots (cdr s))))
+    (else (how-many-dots (cdr s)))
+  )
 )
 
 (define (cadr s) (car (cdr s)))
@@ -48,33 +53,49 @@
 (define (multiplicand p) (caddr p))
 
 (define (derive-sum expr var)
-  'YOUR-CODE-HERE
+  (cond 
+    ((equal? expr var) 1)
+    ((pair? expr) (make-sum (derive (addend expr) var) (derive (augend expr) var)))
+    (else 0))
 )
 
 (define (derive-product expr var)
-  'YOUR-CODE-HERE
+  (cond 
+    ((eq? expr var) 1)
+    ((pair? expr) (make-sum 
+                    (make-product
+                        (derive (multiplier expr) var) (multiplicand expr))
+                    (make-product
+                        (multiplier expr) (derive (multiplicand expr) var))))
+    (else 0))
 )
 
 ; Exponentiations are represented as lists that start with ^.
-(define (make-exp base exponent)
-  'YOUR-CODE-HERE
+(define (make-exp bse power-of)
+  (cond 
+    ((= power-of 0) 1)
+    ((= power-of 1) bse)
+    ((number? bse) (expt bse power-of))
+    ((exp? bse) (make-exp (base bse) (* (exponent bse) power-of)))
+    (else (list '^ bse power-of))
+  )
 )
 
 (define (base exp)
-  'YOUR-CODE-HERE
+  (cadr exp)
 )
 
 (define (exponent exp)
-  'YOUR-CODE-HERE
+  (caddr exp)
 )
 
 (define (exp? exp)
-  'YOUR-CODE-HERE
+  (and (list? exp) (eq? (car exp) '^))
 )
 
 (define x^2 (make-exp 'x 2))
 (define x^3 (make-exp 'x 3))
 
 (define (derive-exp exp var)
-  'YOUR-CODE-HERE
+  (make-product (exponent exp) (make-exp (base exp) (- (exponent exp) 1)))
 )
