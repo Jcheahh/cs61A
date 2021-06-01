@@ -17,7 +17,15 @@ def hailstone(n):
     1
     """
     "*** YOUR CODE HERE ***"
-
+    while n != 1:
+        yield n
+        
+        if n % 2 == 0:
+            n = n // 2
+        else:
+            n = (n * 3) + 1
+    else:
+        yield n
 # Q6
 def repeated(t, k):
     """Return the first value in iterable T that appears K times in a row.
@@ -26,12 +34,27 @@ def repeated(t, k):
     >>> repeated(trap(s, 7), 2)
     4
     >>> repeated(trap(s, 10), 3)
+
     5
     >>> print(repeated([4, None, None, None], 3))
     None
     """
     assert k > 1
     "*** YOUR CODE HERE ***"
+    t_iter = iter(t)
+    prev = next(t_iter)
+    count = 1
+    
+    while count < k:
+        current = next(t_iter)
+
+        if current == prev:
+            count += 1
+        else:
+            prev = current
+            count = 1
+        
+    return prev
 
 # Q7
 def merge(s0, s1):
@@ -54,6 +77,16 @@ def merge(s0, s1):
     i0, i1 = iter(s0), iter(s1)
     e0, e1 = next(i0, None), next(i1, None)
     "*** YOUR CODE HERE ***"
+    while e0 != None or e1 != None:
+        if e0 == None or e1 < e0:
+            yield e1
+            e1 = next(i1, None)
+        elif e1 == None or e0 < e1:
+            yield e0
+            e0 = next(i0, None)
+        else:
+            yield e0
+            e0, e1 = next(i0, None), next(i1, None)
 
 # Q8
 def remainders_generator(m):
@@ -79,6 +112,14 @@ def remainders_generator(m):
     11
     """
     "*** YOUR CODE HERE ***"
+    def remainder(r):
+        i = 0
+        while True:
+            yield i * m + r
+
+            i += 1
+
+    yield from [remainder(r) for r in range(m)]
 
 # Q9
 def zip_generator(*iterables):
@@ -94,3 +135,16 @@ def zip_generator(*iterables):
     [2, 5, 8]
     """
     "*** YOUR CODE HERE ***"
+    iterators = [iter(iterable) for iterable in iterables]
+
+    try:
+        while True:
+            res = []
+
+            for iterator in iterators:
+                res.append(next(iterator))
+
+            yield res
+
+    except StopIteration:
+        pass
