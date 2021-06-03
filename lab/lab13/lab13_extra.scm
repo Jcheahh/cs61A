@@ -1,6 +1,13 @@
 ; Q4
 (define (rle s)
-  'YOUR-CODE-HERE
+  (define (go x xs n)
+    (cond
+      ((null? xs) (cons-stream (list x n) nil))
+      ((= (car xs) x) (go x (cdr-stream xs) (+ n 1)))
+      (else (cons-stream (list x n) (go (car xs) (cdr-stream xs) 1)))))
+  (if (null? s)
+    '()
+    (go (car s) (cdr-stream s) 1))
 )
 
 ; Q4 testing functions
@@ -16,13 +23,20 @@
 
 ; Q5
 (define (insert n s)
-  'YOUR-CODE-HERE
+  (define (res n s ls)
+    (cond ((null? s) (append ls (list n)))
+    ((> (car s) n) (append ls (cons n s)))
+    (else (res n (cdr s) (append ls (list (car s)))))))
+  
+  (res n s '())
 )
 
 ; Q6
 (define (deep-map fn s)
-  'YOUR-CODE-HERE
-  nil
+  (cond 
+    ((null? s) '())
+    ((list? (car s)) (cons (deep-map fn (car s)) (deep-map fn (cdr s))))
+    (else (cons (fn (car s)) (deep-map fn (cdr s)))))
 )
 
 ; Q7
@@ -46,11 +60,24 @@
 )
 
 (define (count name s)
-  'YOUR-CODE-HERE
-  nil
+  (cond 
+    ((null? s) 0)
+    ((eq? (car s) name) (+ 1 (count name (cdr s))))
+    (else (count name (cdr s))))
 )
 
 (define (tally names)
-  'YOUR-CODE-HERE
-  nil
+  (if (null? names)
+    '()
+    (cons 
+      (cons 
+        (car names) 
+        (count (car names) names)
+      )
+      (tally
+        (filter
+          (lambda (x) (not (eq? (car names) x))) 
+          (cdr names)))
+    )
+  )
 )

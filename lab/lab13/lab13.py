@@ -20,3 +20,10 @@ def permutations(lst):
         yield []
         return
     "*** YOUR CODE HERE ***"
+    head, *tail = lst
+
+    for xs in permutations(tail):
+        for index in range(len(xs)):
+            yield xs[:index] + [head] + xs[index:]
+        yield xs + [head]
+

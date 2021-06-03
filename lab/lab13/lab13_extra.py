@@ -40,3 +40,15 @@ def make_generators_generator(g):
     5
     """
     "*** YOUR CODE HERE ***"
+    def helper(arr):
+        for i in arr:
+            yield i
+            
+    arr = []
+    for i in g():
+        arr.append(i)
+        yield helper(arr)
+
+    
+
+
